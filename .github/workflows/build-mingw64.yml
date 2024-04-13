@@ -26,7 +26,7 @@ jobs:
       - name: Set artifact name
         shell: bash
         run: |
-          echo "artifact_name=ocamlformat-${build_ref##*/}.exe" >> $GITHUB_ENV
+          echo "artifact_name=ocamlformat-${build_ref##*/}.zip" >> $GITHUB_ENV
 
       - name: Disable Git EOL Conversion
         run: |
@@ -55,7 +55,8 @@ jobs:
           opam exec -- dune subst
           opam exec -- dune build -p ocamlformat-lib,ocamlformat @install
           opam exec -- dune install --prefix=install ocamlformat
-          Copy-Item ${{ github.workspace }}\\install\\bin\\ocamlformat.exe -Destination .\${{ env.artifact_name }}
+          cd ${{ github.workspace }}\\install\\bin
+          Compress-Archive -LiteralPath ocamlformat.exe,ocamlformat-rpc.exe -DestinationPath ${{ github.workspace }}\\${{ env.artifact_name }}
 
       - name: Version check
         run: |
